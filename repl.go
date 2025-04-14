@@ -7,26 +7,13 @@ import (
     "os"
     )
 
-func startRepl() {
-
 type cliCommand struct {
     name        string
     description string
     callback    func() error
 }
 
-commands := map[string]cliCommand{
-    "exit": {
-        name:           "exit",
-        description:    "Exit the Pokedex",
-        callback:       commandExit,
-    },
-    "help": {
-        name:           "help",
-        description:    "Displays a help message",
-        callback:       helpMessage,
-    },
-}
+func startRepl() {
 
     scanner := bufio.NewScanner(os.Stdin)
 
@@ -34,37 +21,28 @@ commands := map[string]cliCommand{
         fmt.Print("Pokedex > ")
         scanner.Scan()
         output := cleanInput(scanner.Text())
-        fmt.Println(output)
+        //fmt.Println(output)
 
-        commandFound := false
-        for _, command := range commands {
-            if output[0] == command.name {
-                commandFound = true
-                err := command.callback()
-                if err != nil {
-                    fmt.Printf("Error: %s", err)
-                }
-                break
-
-            }
+        if len(output) == 0 {
+            continue
         }
-        if commandFound == false {
-            fmt.Println("Command not found")
+
+        commandName := output[0]
+
+        command, exists := getCommands()[commandName]
+        if exists {
+            err := command.callback()
+            if err != nil {
+                fmt.Println(err)
+            }
+            continue
+        } else {
+            fmt.Println("Unknownn command")
+            continue
         }
     }
 }
 
-
-func helpMessage() error {
-    fmt.Println("Welcome to the Pokedex!")
-    return nil
-}
-
-func commandExit() error {
-    fmt.Println("Closing the Pokedex... Goodbye!")
-    os.Exit(0)
-    return nil
-}
 
 func cleanInput(text string) []string {
 
@@ -75,4 +53,22 @@ func cleanInput(text string) []string {
     words = strings.Fields(output)
 
     return words
+}
+
+
+func getCommands() map[string]cliCommand {
+
+    commands := map[string]cliCommand{
+        "exit": {
+            name:           "exit",
+            description:    "Exit the Pokedex",
+            callback:       commandExit,
+        },
+        "help": {
+            name:           "help",
+            description:    "Displays a help message",
+            callback:       commandHelp,
+        },
+    }
+    return commands
 }
