@@ -5,23 +5,18 @@ import (
     "fmt"
     "bufio"
     "os"
+    "github.com/ianhaddock/pokedexcli/internal/pokeapi"
     )
 
-type cliCommand struct {
-    name        string
-    description string
-    callback    func(*config) error
-}
-
 type config struct {
-    next        string
-    previous    string
+    pokeapiClient pokeapi.Client
+    nextLocationsURL *string
+    prevLocationsURL *string
 }
 
-func startRepl() {
+func startRepl(cfg *config) {
 
     scanner := bufio.NewScanner(os.Stdin)
-    conf := config{}
 
     for {
         fmt.Print("Pokedex > ")
@@ -38,7 +33,7 @@ func startRepl() {
 
         command, exists := getCommands()[commandName]
         if exists {
-            err := command.callback(&conf)
+            err := command.callback(cfg)
             if err != nil {
                 fmt.Println(err)
             }
@@ -64,14 +59,15 @@ func cleanInput(text string) []string {
 }
 
 
+type cliCommand struct {
+    name        string
+    description string
+    callback    func(*config) error
+}
+
 func getCommands() map[string]cliCommand {
 
     commands := map[string]cliCommand{
-        "exit": {
-            name:           "exit",
-            description:    "Exit the Pokedex",
-            callback:       commandExit,
-        },
         "help": {
             name:           "help",
             description:    "Displays a help message",
@@ -79,13 +75,18 @@ func getCommands() map[string]cliCommand {
         },
         "map": {
             name:           "map",
-            description:    "Displays 20 locations areas",
+            description:    "Get the next page of locations",
             callback:       commandMap,
         },
         "mapb": {
             name:           "mapb",
-            description:    "Displays previous 20 locations areas",
+            description:    "Get the previous page of locations",
             callback:       commandMapb,
+        },
+        "exit": {
+            name:           "exit",
+            description:    "Exit the Pokedex",
+            callback:       commandExit,
         },
     }
     return commands
