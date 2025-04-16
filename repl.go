@@ -13,6 +13,11 @@ type cliCommand struct {
     callback    func() error
 }
 
+type config struct {
+    next        string
+    previous    string
+}
+
 func startRepl() {
 
     scanner := bufio.NewScanner(os.Stdin)
