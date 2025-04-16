@@ -8,13 +8,14 @@ import (
     "log"
 )
 
-func commandMap(conf *config) error {
+func commandMapb(conf *config) error {
 
-    if conf.next == "" {
-        conf.next = "https://pokeapi.co/api/v2/location-area/"
+    if conf.previous == "" {
+        fmt.Println("you're on the first page")
+        return nil
     }
 
-    response, err := http.Get(conf.next)
+    response, err := http.Get(conf.previous)
     if err != nil {
         log.Fatal(err)
     }
