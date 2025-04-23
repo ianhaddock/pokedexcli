@@ -6,6 +6,7 @@ import (
     "bufio"
     "os"
     "github.com/ianhaddock/pokedexcli/internal/pokeapi"
+    "github.com/ianhaddock/pokedexcli/internal/pokecache"
     )
 
 type config struct {
@@ -15,6 +16,15 @@ type config struct {
 }
 
 func startRepl(cfg *config) {
+
+    urlCache := pokecache.NewCache()
+    urlCache.Add("test", []byte{})
+    val, ok := urlCache.Get("test")
+    if ok {
+        fmt.Printf("Found in cache: %v \n", val)
+    } else {
+        fmt.Printf("Not found in cache: %v \n", val)
+    }
 
     scanner := bufio.NewScanner(os.Stdin)
 
