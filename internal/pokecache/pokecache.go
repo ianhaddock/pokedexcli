@@ -21,43 +21,35 @@ type cacheEntry struct {
 // funcs
 
 func NewCache() Cache {
+    interval := time.Duration(15 * time.Second)
     c := Cache{}
     c.cache = make(map[string]cacheEntry)
-    c.reapLoop()
+    go c.reapLoop(interval)
 
     return c
 }
 
 
-func removeStaleCacheEntries(ch <-chan bool) error {
-    check := true
+func (c *Cache) reapLoop(interval time.Duration) {
 
-    for check == true {
-        check = <-ch
-        if check {
-            fmt.Println("remove stale entries")
-        } else {
-            fmt.Println("not removing entires")
+    ticker := time.NewTicker(interval) 
+    defer ticker.Stop()
+
+    for range ticker.C {
+        currentTime := time.Now()
+
+        fmt.Printf(">> cache size: %d \n", len(c.cache))
+        for string, entry := range c.cache {
+            fmt.Printf("cache entry: %s \n", string)
+            fmt.Printf("created at: %s \n", entry.createdAt)
+            elapsed := currentTime.Sub(entry.createdAt)
+            fmt.Printf("Elapsed time: %s \n", elapsed)
+            if elapsed > interval {
+                fmt.Println("removing entry")
+                delete(c.cache, string)
+            }
         }
     }
-    return nil
-}
-
-func (c *Cache) reapLoop() {   // should have interval time.Duration
-
-    fmt.Println("reap loop started.")
-
-    ch := make(chan bool)
-
-    go removeStaleCacheEntries(ch)
-
-    ch <- true
-    ch <- true
-    ch <- false
-
- /*   for str, _ := range c.cache {
-        fmt.Printf("cache entry is newer than interval: %s", str)
-    } */
 }
 
 func (c *Cache) Add(key string, val []byte) error {
