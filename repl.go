@@ -88,6 +88,11 @@ func getCommands() map[string]cliCommand {
             description:    "Exit the Pokedex",
             callback:       commandExit,
         },
+        "cache": {
+            name:           "cache",
+            description:    "List all cache entries",
+            callback:       commandListCache,
+        },
     }
     return commands
 }

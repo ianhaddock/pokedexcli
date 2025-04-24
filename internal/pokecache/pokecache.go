@@ -10,7 +10,7 @@ import (
 
 type Cache struct {
     cache map[string]cacheEntry
-    mu sync.RWMutex
+    mu *sync.RWMutex
 }
 
 type cacheEntry struct {
@@ -21,11 +21,20 @@ type cacheEntry struct {
 // funcs
 
 func NewCache(interval time.Duration) Cache {
-    c := Cache{}
-    c.cache = make(map[string]cacheEntry)
+    c := Cache{
+        cache: make(map[string]cacheEntry),
+        mu: &sync.RWMutex{},
+    }
     go c.reapLoop(interval)
 
     return c
+}
+
+func (c *Cache) ListCache() {
+    for string, entry := range c.cache {
+        fmt.Printf("cache entry: %s \n", string)
+        fmt.Printf("created at: %s \n", entry.createdAt)
+    }
 }
 
 
@@ -53,25 +62,22 @@ func (c *Cache) reapLoop(interval time.Duration) {
     }
 }
 
-func (c *Cache) Add(key string, val []byte) error {
+func (c *Cache) Add(key string, val []byte) {
 
-    newEntry := cacheEntry{}
-    newEntry.createdAt = time.Now()
-    newEntry.val = val
-
-    fmt.Printf("Added: %s \n", key)
     c.mu.Lock()
-    c.cache[key] = newEntry
-    c.mu.Unlock()
-
-    return nil
+    defer c.mu.Unlock()
+    c.cache[key] = cacheEntry{
+        createdAt: time.Now(),
+        val: val,
+    }
+    //fmt.Printf("Added: %s \n", key)
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
 
     c.mu.Lock()
+    defer c.mu.Unlock()
     v, ok := c.cache[key]
-    c.mu.Unlock()
     if ok {
         return v.val, true
     }

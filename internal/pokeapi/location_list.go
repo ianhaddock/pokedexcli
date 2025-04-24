@@ -7,6 +7,12 @@ import (
     "fmt"
 )
 
+// ListCache - 
+
+func (c *Client) ListCache() {
+    c.pokeCache.ListCache()
+}
+
 // ListLocations -
 func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
     url := baseURL + "/location-area"
@@ -42,10 +48,7 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
         return RespShallowLocations{}, err
     }
 
-    err = c.pokeCache.Add(url, dat)
-    if err != nil {
-        return RespShallowLocations{}, err
-    }
+    c.pokeCache.Add(url, dat)
 
     locationsResp := RespShallowLocations{}
     err = json.Unmarshal(dat, &locationsResp)
