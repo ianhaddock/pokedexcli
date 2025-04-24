@@ -29,9 +29,31 @@ func NewCache() Cache {
 }
 
 
+func removeStaleCacheEntries(ch <-chan bool) error {
+    check := true
+
+    for check == true {
+        check = <-ch
+        if check {
+            fmt.Println("remove stale entries")
+        } else {
+            fmt.Println("not removing entires")
+        }
+    }
+    return nil
+}
+
 func (c *Cache) reapLoop() {   // should have interval time.Duration
 
     fmt.Println("reap loop started.")
+
+    ch := make(chan bool)
+
+    go removeStaleCacheEntries(ch)
+
+    ch <- true
+    ch <- true
+    ch <- false
 
  /*   for str, _ := range c.cache {
         fmt.Printf("cache entry is newer than interval: %s", str)
