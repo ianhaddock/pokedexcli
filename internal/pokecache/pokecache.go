@@ -31,7 +31,7 @@ func NewCache() Cache {
 
 func (c *Cache) reapLoop() {   // should have interval time.Duration
 
-    fmt.Printf("reap loop!")
+    fmt.Println("reap loop started.")
 
  /*   for str, _ := range c.cache {
         fmt.Printf("cache entry is newer than interval: %s", str)
@@ -39,17 +39,19 @@ func (c *Cache) reapLoop() {   // should have interval time.Duration
 }
 
 func (c *Cache) Add(key string, val []byte) error {
+
     newEntry := cacheEntry{}
     newEntry.createdAt = time.Now()
     newEntry.val = val
 
-    fmt.Printf("key: %s, val: %v \n", key, val)
+    fmt.Printf("Added: %s \n", key)
     c.cache[key] = newEntry
 
     return nil
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
+
     v, ok := c.cache[key]
     if ok {
         return v.val, true
