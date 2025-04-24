@@ -10,7 +10,7 @@ import (
 
 type Cache struct {
     cache map[string]cacheEntry
-    mu sync.Mutex
+    mu sync.RWMutex
 }
 
 type cacheEntry struct {
@@ -20,8 +20,7 @@ type cacheEntry struct {
 
 // funcs
 
-func NewCache() Cache {
-    interval := time.Duration(15 * time.Second)
+func NewCache(interval time.Duration) Cache {
     c := Cache{}
     c.cache = make(map[string]cacheEntry)
     go c.reapLoop(interval)
@@ -46,7 +45,9 @@ func (c *Cache) reapLoop(interval time.Duration) {
             fmt.Printf("Elapsed time: %s \n", elapsed)
             if elapsed > interval {
                 fmt.Println("removing entry")
+                c.mu.Lock()
                 delete(c.cache, string)
+                c.mu.Unlock()
             }
         }
     }
@@ -59,14 +60,18 @@ func (c *Cache) Add(key string, val []byte) error {
     newEntry.val = val
 
     fmt.Printf("Added: %s \n", key)
+    c.mu.Lock()
     c.cache[key] = newEntry
+    c.mu.Unlock()
 
     return nil
 }
 
 func (c *Cache) Get(key string) ([]byte, bool) {
 
+    c.mu.Lock()
     v, ok := c.cache[key]
+    c.mu.Unlock()
     if ok {
         return v.val, true
     }

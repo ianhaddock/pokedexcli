@@ -15,7 +15,7 @@ func (c *Client) ListLocations(pageURL *string) (RespShallowLocations, error) {
     }
 
     dat, ok := c.pokeCache.Get(url)
-    fmt.Printf(">> %v \n", ok)
+//    fmt.Printf(">> %v \n", ok)
     if ok {
         locationsResp := RespShallowLocations{}
         err := json.Unmarshal(dat, &locationsResp)
