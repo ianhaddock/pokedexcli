@@ -4,7 +4,7 @@ import (
    // "errors"
 )
 
-func commandListCache(cfg *config) error {
+func commandListCache(cfg *config, loc string) error {
 
     cfg.pokeapiClient.ListCache()
 
