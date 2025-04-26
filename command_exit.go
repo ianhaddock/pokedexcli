@@ -5,9 +5,8 @@ import (
     "os"
     )
 
-func commandExit(conf *config, loc string) error {
+func commandExit(conf *config, args ...string) error {
     fmt.Println("Closing the Pokedex... Goodbye!")
-    fmt.Println(loc)
     os.Exit(0)
     return nil
 }
