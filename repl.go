@@ -99,12 +99,12 @@ func getCommands() map[string]cliCommand {
             callback:       commandListCache,
         },
         "explore": {
-            name:           "explore",
+            name:           "explore <location_name>",
             description:    "Explore a location by name",
             callback:       commandExplore,
         },
         "catch": {
-            name:           "catch",
+            name:           "catch <pokemon_name>",
             description:    "Catch a pokemon by name",
             callback:       commandCatch,
         },
