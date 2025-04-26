@@ -25,16 +25,12 @@ func commandCatch(cfg *config, args ...string) error {
     fmt.Printf("Throwing a Pokeball at %s... \n", name)
     if charSkill > catchResp.BaseExperience {
         fmt.Printf("%s was caught!\n", name)
+        fmt.Println("You can inspect it with the inspect command")
         cfg.characterPokedex[catchResp.Name] = catchResp
     } else {
         fmt.Printf("%s escaped!\n", name)
     }
 
-    fmt.Println("Caught pokemon:")
-    for _, pokemon := range cfg.characterPokedex {
-        fmt.Printf(" - %s\n", pokemon.Name)
-    }
-    
     return nil
 }
 
